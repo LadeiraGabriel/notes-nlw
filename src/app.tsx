@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import logo from "./assets/logo-expert.svg";
 import { NewNoteCard } from "./components/new-note-card";
 import { NoteCard } from "./components/note-card";
@@ -10,10 +10,19 @@ type Note = {
 };
 
 export function App() {
-  const [notes, setNotes] = useState<Note[]>([]);
+  const [notes, setNotes] = useState<Note[]>(() => {
+    const notesInStore = localStorage.getItem("notes");
+    if (notesInStore) {
+      return JSON.parse(notesInStore);
+    }
+    return [];
+  });
+  const [search, setSearch] = useState("");
 
   function CreateNewNote(note: Note) {
-    setNotes([note, ...notes]);
+    const addNote = [note, ...notes];
+    setNotes(addNote);
+    localStorage.setItem("notes", JSON.stringify(addNote));
   }
 
   function deleteNoteById(id: string) {
@@ -22,16 +31,26 @@ export function App() {
     });
 
     setNotes(notesWithoutNoteofId);
+    localStorage.setItem("notes", JSON.stringify(notesWithoutNoteofId));
   }
+
+  function handleSearchNote(event: ChangeEvent<HTMLInputElement>) {
+    setSearch(event.target.value);
+  }
+  const filterSeachNotes =
+    search !== ""
+      ? notes.filter((note) => note.content.includes(search))
+      : notes;
   return (
     <>
-      <div className="m-16 space-y-6">
+      <div className="m-16  2xl:mx-96  space-y-6">
         <img className="w-32" src={logo} alt="NLW Expert" />
         <form>
           <input
-            className="bg-slate-900 outline-none text-3xl
+            onChange={handleSearchNote}
+            className="bg-slate-900 outline-none md:text-3xl
             placeholder:text-slate-500 
-            placeholder:font-semibold  w-full antialiased
+            placeholder:font-semibold w-full antialiased
             "
             type="text"
             placeholder="Busque em suas notas... "
@@ -39,9 +58,9 @@ export function App() {
         </form>
         <div className="border border-spacing-1 border-slate-700 " />
 
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <NewNoteCard CreateNewNote={CreateNewNote} />
-          {notes.map((note) => (
+          {filterSeachNotes.map((note) => (
             <NoteCard key={note.id} note={note} deleteNote={deleteNoteById} />
           ))}
         </div>

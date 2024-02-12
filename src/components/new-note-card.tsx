@@ -1,6 +1,7 @@
 import { Dialog } from "@radix-ui/themes";
 import { ArrowUpRight, X } from "lucide-react";
 import { ChangeEvent, useState } from "react";
+import { toast } from "sonner";
 
 type Note = {
   id: string;
@@ -29,6 +30,7 @@ export const NewNoteCard = ({ CreateNewNote }: NewNoteCardProps) => {
       date: new Date(),
       content: content,
     });
+    toast.success("Nota criada com sucesso!");
   }
 
   function handleSaveWrittenNote() {
@@ -108,8 +110,8 @@ export const NewNoteCard = ({ CreateNewNote }: NewNoteCardProps) => {
           </button>
         </Dialog.Trigger>
         <Dialog.Content
-          className="bg-slate-700 absolute
-        top-4 w-[640px] h-[600px]  rounded-md 
+          className="bg-slate-700 fixed top-0 w-full h-full md:left-1/2 md:top-1/2
+          md:right-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[640px] md:h-[600px]  rounded-md 
          p-5 text-sm flex flex-col
          overflow-hidden
          text-slate-400
